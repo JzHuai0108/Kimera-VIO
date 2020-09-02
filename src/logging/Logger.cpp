@@ -144,7 +144,7 @@ void BackendLogger::logBackendResultsCSV(const BackendOutput& vio_output) {
   // First, write header, but only once.
   if (!is_header_written) {
     output_stream << "#timestamp,x,y,z,qw,qx,qy,qz,vx,vy,vz,"
-                  << "bgx,bgy,bgz,bax,bay,baz" << std::endl;
+                  << "bgx,bgy,bgz,bax,bay,baz, and cov diag" << std::endl;
     is_header_written = true;
   }
   const auto& cached_state = vio_output.W_State_Blkf_;
@@ -153,6 +153,7 @@ void BackendLogger::logBackendResultsCSV(const BackendOutput& vio_output) {
   const auto& w_vel_blkf = cached_state.velocity_.transpose();
   const auto& imu_bias_gyro = cached_state.imu_bias_.gyroscope().transpose();
   const auto& imu_bias_acc = cached_state.imu_bias_.accelerometer().transpose();
+  const auto& std_diag = vio_output.state_covariance_lkf_.diagonal().cwiseSqrt().transpose();
   output_stream << cached_state.timestamp_ << ","  //
                 << w_pose_blkf_trans.x() << ","    //
                 << w_pose_blkf_trans.y() << ","    //
@@ -169,7 +170,10 @@ void BackendLogger::logBackendResultsCSV(const BackendOutput& vio_output) {
                 << imu_bias_gyro(2) << ","         //
                 << imu_bias_acc(0) << ","          //
                 << imu_bias_acc(1) << ","          //
-                << imu_bias_acc(2)                 //
+                << imu_bias_acc(2) << "," << std_diag[0] 
+                << "," << std_diag[1] << "," << std_diag[2] 
+                << "," << std_diag[3] << "," << std_diag[4] 
+                << "," << std_diag[5]        //
                 << std::endl;
 }
 

@@ -35,6 +35,7 @@
 #include "kimera-vio/visualizer/Visualizer3DFactory.h"
 
 DEFINE_bool(log_output, false, "Log output to CSV files.");
+DEFINE_bool(log_backend_output, true, "Log backend output to CSV files.");
 DEFINE_bool(extract_planes_from_the_scene,
             false,
             "Whether to use structural regularities in the scene,"
@@ -165,7 +166,7 @@ Pipeline::Pipeline(const VioParams& params,
                                     *backend_params_,
                                     imu_params_,
                                     backend_output_params,
-                                    FLAGS_log_output));
+                                    FLAGS_log_backend_output));
   vio_backend_module_->registerOnFailureCallback(
       std::bind(&Pipeline::signalBackendFailure, this));
   vio_backend_module_->registerImuBiasUpdateCallback(
